@@ -131,7 +131,7 @@ modules:
       - source: system/dev/starship-profile
         destination: /etc/profile.d/
      
-  - type: justfiles
+  #- type: justfiles
   
   - type: systemd
     system:

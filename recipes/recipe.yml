@@ -1,45 +1,175 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # image will be published to ghcr.io/<user>/<name>
-name: silverblue-ish
-# description will be included in the image's metadata
-description: This is my personal OS image.
 
-# the base image to build on top of (FROM) and the version tag to use
+name: nargothrond
+description: This is my personal OS image with proprietary NVIDIA drivers.
+
 base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42 # latest is also supported if you want new updates ASAP
+image-version: latest
 
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
+  # -----------------------------------------------
+  #  NVIDIA's proprietary driver support
+  # -----------------------------------------------
+  - type: akmods
+    base: main
+    install: [] 
+    nvidia-driver: nvidia
+
   - type: files
     files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+      - source: system/etc/environment
+        destination: /etc/
 
+  # -----------------------------------------------
+  #  Main repos and packages
+  # -----------------------------------------------
+  - type: dnf
+    install:
+      skip-unavailable: true
+      packages:
+        - steam-devices
+        - android-tools
+
+    remove:
+      auto-remove: true
+      packages:
+        - firefox
+        - firefox-langpacks
+        - gnome-tour
+
+  # -----------------------------------------------
+  #  3rd party repos and packages
+  # -----------------------------------------------
   - type: dnf
     repos:
+      cleanup: true
+      nonfree: negativo17
       copr:
         - atim/starship
+        - abn/throttled
+      keys:
+        - https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key   # insync keys
+      files:
+        - insync.repo
+    
     install:
+      skip-unavailable: true
+      install-weak-deps: true
+      allow-erasing: true
       packages:
-        - micro
+        - throttled
         - starship
-    remove:
-      packages:
-        # example: removing firefox (in favor of the flatpak)
-        # "firefox" is the main package, "firefox-langpacks" is a dependency
-        - firefox
-        - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+        - tailscale
+        - uld      
+        - insync
+        - insync-nautilus
 
+    remove:
+      auto-remove: true
+      packages:
+        - thermald
+        
+  - type: script
+    scripts:
+      #- setup-papirus.sh
+      - setup-flathub.sh
+      - setup-autofirma.sh
+      
   - type: default-flatpaks
     configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
+      - notify: false
         scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
+        repo: 
+          title: Flathub (system)
+        install:
           - org.mozilla.firefox
-          - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
+          - org.gtk.Gtk3theme.adw-gtk3
+          - org.gtk.Gtk3theme.adw-gtk3-dark
+          - it.mijorus.gearlever
+          - com.github.tchx84.Flatseal
+          - com.mattjakeman.ExtensionManager
+          - de.haeckerfelix.Fragments
+          - io.gitlab.adhami3310.Impression
+          - org.gnome.SimpleScan
+          - org.gnome.Showtime
+          - com.github.Matoking.protontricks
+          - com.github.jeromerobert.pdfarranger
+          - com.heroicgameslauncher.hgl
+          - com.ranfdev.DistroShelf
+          - com.spotify.Client
+          - com.stremio.Stremio
+          - com.usebottles.bottles
+          - com.valvesoftware.Steam
+          - com.vysp3r.ProtonPlus
+          - dev.qwery.AddWater
+          - io.github.Foldex.AdwSteamGtk
+          - io.github.diegoivan.pdf_metadata_editor
+          - io.github.flattool.Warehouse
+          - md.obsidian.Obsidian
+          - org.gnome.Geary
+          - org.onlyoffice.desktopeditors
+          - io.github.fabrialberio.pinapp
+          - page.tesk.Refine
+          - fm.reaper.Reaper
+          - com.calibre_ebook.calibre
+          - org.nickvision.tubeconverter
+          - org.rncbc.qpwgraph
+          - org.bleachbit.BleachBit
+          - app.drey.EarTag
+          - com.github.wwmm.easyeffects
+          - com.valvesoftware.Steam.CompatibilityTool.Proton-GE
+          - org.freedesktop.Platform.VAAPI.nvidia
+          - org.freedesktop.Platform.VAAPI.Intel
+          - io.github.kolunmi.Bazaar
+      
+  - type: files
+    files:
+      - source: system/kargs/fstrim-config.toml
+        destination: /usr/lib/bootc/kargs.d/
+      - source: system/etc/throttled.conf
+        destination: /etc/
+      - source: system/dev/starship-profile
+        destination: /etc/profile.d/
+     
+  - type: justfiles
+  
+  - type: systemd
+    system:
+      enabled:
+        - tailscaled.service
+        - throttled.service
+      disabled:
+        - NetworkManager-wait-online.service
+  
+  - type: gnome-extensions
+    install:
+      - 3193  # Blur My Shell
+      - 517   # Caffeine
+      - 615   # AppIndicator Support
+      - 1319  # GSConnect
+      - 3780  # ddterm
+      - 4158  # Gnome 4x UI Improvements
+      - 2236  # Night Theme Switcher
+      - 3733  # Tiling Assistant
+      - 355   # Status Area Horizontal Spacing
+      - 4491  # Privacy Quick Settings
+      - 4269  # Alphabetical App Grid
+      - 5724  # Battery Health Charging
+      - 7048  # Rounded Window Corners Reborn
+      - 5105  # RebootToUEFI
+      - 3956  # GNOME Fuzzy App Search
+      - 8277  # Screen Brightness Governor
+      - 7406  # Spotify Controls + Track Info
+      - 7074  # GameMode Shell Extension
+      - 4691  # PiP on top
+      - 355   # Status Area Horizontal Spacing
+ 
+  - type: gschema-overrides
+    include:
+      - zz1.settings.gschema.override
+      #- zz2.extensions.gschema.override
+      #- zz3.extension-settings.gschema.override
 
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+  - type: signing # Necessary for signing files

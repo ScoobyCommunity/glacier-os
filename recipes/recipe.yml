@@ -126,10 +126,8 @@ modules:
       
   - type: files
     files:
-      - source: system/kargs/fstrim-config.toml
-        destination: /usr/lib/bootc/kargs.d/
-      - source: system/etc/throttled.conf
-        destination: /etc/
+      #- source: system/kargs/fstrim-config.toml
+      #  destination: /usr/lib/bootc/kargs.d/
       - source: system/dev/starship-profile
         destination: /etc/profile.d/
      

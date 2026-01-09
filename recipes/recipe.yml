@@ -9,9 +9,11 @@ base-image: ghcr.io/ublue-os/silverblue-main
 image-version: latest
 
 modules:
+ 
   # -----------------------------------------------
   #  NVIDIA's proprietary driver support
   # -----------------------------------------------
+  
   - type: akmods
     base: main
     install: [] 
@@ -23,8 +25,19 @@ modules:
         destination: /etc/
 
   # -----------------------------------------------
+  #  Kernel arguments for the GRUB file
+  # -----------------------------------------------
+
+  - type: kargs
+    arch: x86_64
+    kargs:
+      - mitigations=off
+      - rd.luks.options=discard
+
+  # -----------------------------------------------
   #  Main repos and packages
   # -----------------------------------------------
+  
   - type: dnf
     install:
       skip-unavailable: true
@@ -42,6 +55,7 @@ modules:
   # -----------------------------------------------
   #  3rd party repos and packages
   # -----------------------------------------------
+  
   - type: dnf
     repos:
       cleanup: true

@@ -17,7 +17,7 @@ modules:
   - type: akmods
     base: main
     install: [] 
-    nvidia-driver: nvidia
+    nvidia-driver: nvidia-lts
 
   - type: files
     files:

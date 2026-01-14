@@ -140,12 +140,11 @@ modules:
       
   - type: files
     files:
-
-    # Starship related files
+      # Starship related files
       - source: system/dev/starship-profile
         destination: /etc/profile.d/
 
-    # Bootc instead of rpm-ostree updates  
+      # Bootc instead of rpm-ostree updates  
       - source: system/common/bootc-service-override
         destination: /etc/systemd/system/bootc-fetch-apply-updates.service.d/
      

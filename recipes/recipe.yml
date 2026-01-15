@@ -6,7 +6,7 @@ name: glacier-os
 description: This is my personal OS image with proprietary NVIDIA drivers.
 
 base-image: ghcr.io/ublue-os/silverblue-main
-image-version: latest
+image-version: 43 # or latest
 
 modules:
  
@@ -17,7 +17,7 @@ modules:
   - type: akmods
     base: main
     install: [] 
-    nvidia-driver: nvidia-lts
+    nvidia-driver: nvidia
 
   - type: files
     files:
@@ -32,7 +32,7 @@ modules:
     arch: x86_64
     kargs:
       - mitigations=off
-      - rd.luks.options=discard
+      - rd.luks.options=discard,no-read-workqueue,no-write-workqueue
 
   # -----------------------------------------------
   #  Main repos and packages
@@ -45,6 +45,7 @@ modules:
         - steam-devices
         - android-tools
         - papirus-icon-theme
+        - adw-gtk3-theme
 
     remove:
       auto-remove: true
@@ -60,7 +61,6 @@ modules:
   - type: dnf
     repos:
       cleanup: true
-      nonfree: negativo17
       copr:
         - atim/starship
         - abn/throttled
@@ -89,6 +89,10 @@ modules:
   - type: script
     scripts:
       - setup-autofirma.sh
+
+  # -----------------------------------------------
+  #  FLATPAKS
+  # -----------------------------------------------
       
   - type: default-flatpaks
     configurations:
@@ -97,46 +101,75 @@ modules:
         repo: 
           title: Flathub (system)
         install:
+          # BASIC TOOLS
+          - io.github.kolunmi.Bazaar
           - org.mozilla.firefox
-          - org.gtk.Gtk3theme.adw-gtk3
-          - org.gtk.Gtk3theme.adw-gtk3-dark
           - it.mijorus.gearlever
           - com.github.tchx84.Flatseal
           - com.mattjakeman.ExtensionManager
-          - de.haeckerfelix.Fragments
-          - io.gitlab.adhami3310.Impression
-          - org.gnome.SimpleScan
-          - org.gnome.Showtime
-          - com.github.Matoking.protontricks
-          - com.github.jeromerobert.pdfarranger
-          - com.heroicgameslauncher.hgl
+          - page.tesk.Refine
           - com.ranfdev.DistroShelf
-          - com.spotify.Client
-          - com.stremio.Stremio
-          - com.usebottles.bottles
+          - io.github.flattool.Warehouse
+          - io.github.fabrialberio.pinapp
+          - org.bleachbit.BleachBit
+          
+          # BACKUP
+          - io.github.vikdevelop.SaveDesktop
+          - org.gnome.World.PikaBackup
+          
+          # GNOME APPS
+          - org.gnome.Calculator
+          - org.gnome.Calendar
+	  - org.gnome.Contacts
+	  - org.gnome.FileRoller
+          - org.gnome.Papers
+          - org.gnome.TextEditor
+          - org.gnome.Weather
+          - org.gnome.Geary
+          
+          # THEMING
+          - org.gtk.Gtk3theme.adw-gtk3
+          - org.gtk.Gtk3theme.adw-gtk3-dark
+	  - dev.qwery.AddWater
+          - io.github.Foldex.AdwSteamGtk
+          
+          # GAMING
           - com.valvesoftware.Steam
           - com.vysp3r.ProtonPlus
-          - dev.qwery.AddWater
-          - io.github.Foldex.AdwSteamGtk
-          - io.github.diegoivan.pdf_metadata_editor
-          - io.github.flattool.Warehouse
-          - md.obsidian.Obsidian
-          - org.gnome.Geary
-          - org.onlyoffice.desktopeditors
-          - io.github.fabrialberio.pinapp
-          - page.tesk.Refine
-          - fm.reaper.Reaper
-          - com.calibre_ebook.calibre
-          - org.nickvision.tubeconverter
-          - org.rncbc.qpwgraph
-          - org.bleachbit.BleachBit
-          - app.drey.EarTag
-          - com.github.wwmm.easyeffects
-          - com.valvesoftware.Steam.CompatibilityTool.Proton-GE
+          - com.github.Matoking.protontricks
+          - com.usebottles.bottles          
+          - com.heroicgameslauncher.hgl
           - org.freedesktop.Platform.VAAPI.nvidia
           - org.freedesktop.Platform.VAAPI.Intel
-          - io.github.kolunmi.Bazaar
-      
+          - com.valvesoftware.Steam.CompatibilityTool.Proton-GE
+          
+          # OFFICE
+          - org.onlyoffice.desktopeditors          
+          - io.github.diegoivan.pdf_metadata_editor
+          - com.github.jeromerobert.pdfarranger          
+          - org.gnome.SimpleScan          
+          - md.obsidian.Obsidian
+          - be.alexandervanhee.gradia
+          - com.github.flxzt.rnote
+          
+          # MULTIMEDIA
+          - org.gnome.Showtime
+          - com.spotify.Client
+          - com.stremio.Stremio
+          - com.github.wwmm.easyeffects
+          - org.rncbc.qpwgraph
+          - app.drey.EarTag
+          - fm.reaper.Reaper
+          
+          # INTERNET & CONNECTVITY
+          - de.haeckerfelix.Fragments
+          - org.nickvision.tubeconverter
+          - dev.deedles.Trayscale
+
+  # -----------------------------------------------
+  #  FILES & PARAMETERS
+  # -----------------------------------------------
+  
   - type: files
     files:
       # Starship related files
@@ -149,6 +182,10 @@ modules:
      
   #- type: justfiles
   
+  # -----------------------------------------------
+  #  SYSTEMD SERVICES
+  # -----------------------------------------------
+  
   - type: systemd
     system:
       enabled:
@@ -156,10 +193,15 @@ modules:
         - throttled.service
       disabled:
         - NetworkManager-wait-online.service
-  
+
+  # -----------------------------------------------
+  #  GNOME EXTENSIONS
+  # -----------------------------------------------
+
   - type: gnome-extensions
     install:
       - 3193  # Blur My Shell
+      - 4481  # Forge
       - 517   # Caffeine
       - 615   # AppIndicator Support
       - 1319  # GSConnect

